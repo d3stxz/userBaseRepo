@@ -12,7 +12,13 @@ func main() {
 	us.User = "postgres"
 	us.Password = "1029384756"
 
+	// err := us.DeleteUser()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 	
+
 	rows, err :=  us.ListUsers()
 	if err != nil {
 		fmt.Println(err)

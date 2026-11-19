@@ -91,10 +91,62 @@ func exists(telephone string) (bool, error) {
 
 }
 
-// func InsertUser(name, lastname, telephone, description string) (UserData, error) {
-// 	exists, err := exists(telephone)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// }
+func InsertUser(name, lastname, telephone, description string) (UserData, error) {
+	userdata :=  UserData{}
+	exists, err := exists(telephone)
+	if err != nil {
+		return userdata, err
+	}
+	db, err := openConnection()
+	if err != nil {
+		return userdata, err
+	}
+	defer db.Close()
+	if exists {
+		return userdata, fmt.Errorf("пользователь по номер %s уже добавлен",telephone)
+	}
+
+	query := "INSERT INTO userdata(name, lastname, telephone, description) VALUES ($1,$2,$3,$4)"
+	_, err = db.Exec(query, name, lastname, telephone, description)
+	if err != nil {
+		return userdata, fmt.Errorf("exec: %w", err)
+	}
+	userdata = UserData{
+		Name: name,
+		Lastname: lastname,
+		Telephone: telephone,
+		Description: description,
+	}
+	return userdata, nil
+}
+
+func DeleteUsers(telephons ...string) error {
+	if len(telephons) == 0 {
+		return fmt.Errorf("параметр telephons не передан")
+	}
+	db, err := openConnection()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	for _, tel := range telephons {
+		exists, err := exists(tel)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			return fmt.Errorf("номер не найден: %s", tel)
+		}
+
+		query := "DELETE FROM userdata WHERE telephone=$1"
+		_, err = db.Exec(query, tel)
+		if err != nil {
+			return fmt.Errorf("exec: %w", err)
+		}
+	}
+	return nil
+}
+
+
 
