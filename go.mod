@@ -1,4 +1,4 @@
-module UserRepo
+module github.com/d3stxz/userBaseRepo
 
 go 1.26.4
 
