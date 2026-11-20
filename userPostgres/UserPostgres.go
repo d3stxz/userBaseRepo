@@ -149,4 +149,17 @@ func DeleteUsers(telephons ...string) error {
 }
 
 
+func DeleteAllUsers() error {
+	db, err := openConnection()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
 
+	query := "DELETE FROM userdata"
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
+	}
+	return nil
+}
